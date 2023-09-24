@@ -1,6 +1,9 @@
 
 # Transport Data Ingestion Pipeline
 
+**##Architecture**
+![dataingestiontransport (2)](https://github.com/LogicAL007/Data-pipeline-using-Azure-stream-Analytics/assets/122959675/7c00372f-8a45-4fe7-a702-a32475dc15c5)
+
 ## Table of Contents
 1. [Introduction](#introduction)
 2. [Tools Used](#tools-used)
