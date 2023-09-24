@@ -3,8 +3,8 @@ import json
 from csv import reader
 from azure.eventhub import EventHubProducerClient, EventData
 
-connection_str = 'Endpoint=sb://transportation-stream-analytics.servicebus.windows.net/;SharedAccessKeyName=shared-access;SharedAccessKey=8PRgq/TotnVZMBitch/9uruTl9o6ztjLt+AEhGsF0tU=;EntityPath=transport-stream'
-eventhub_name = 'transport-stream'
+connection_str = 'Endpoint=sb://transport-event-hub1.servicebus.windows.net/;SharedAccessKeyName=stream-policy;SharedAccessKey=42krzsrgEygnriU4ApHjYZ/duWT5Bu/hT+AEhD17sc8=;EntityPath=tansport-stream'
+eventhub_name = 'tansport-stream'
 
 class Transport:   
     def __init__(self, reportyear, race_eth_code, race_eth_name, geoname, mode, mode_name, pop_total, pop_mode):
@@ -25,7 +25,7 @@ def send_to_eventhub(client, data):
     client.send_batch(event_data_batch)
 
 def main():
-    with open(r'C:\Users\ayomi\OneDrive\Documents\GitHub\Data pipeline using Azure stream Analytics\Data\transportation.csv', 'r') as transport_desc:
+    with open(r'C:\Users\ayomi\OneDrive\Desktop\Data pipeline using Azure stream Analytics\Data-pipeline-using-Azure-stream-Analytics\Data\transportation.csv', 'r') as transport_desc:
         csv_reader = reader(transport_desc)
         header = next(transport_desc)
 
