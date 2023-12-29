@@ -1,12 +1,14 @@
-import time
+
 import json
 from csv import reader
 from azure.eventhub import EventHubProducerClient, EventData
+import os
 
-connection_str = 'Endpoint=sb://transport-event-hub1.servicebus.windows.net/;SharedAccessKeyName=stream-policy;SharedAccessKey=42krzsrgEygnriU4ApHjYZ/duWT5Bu/hT+AEhD17sc8=;EntityPath=tansport-stream'
-eventhub_name = 'tansport-stream'
+CON_STR = os.getenv('CONNECTION_STR')
+EVENTHUB_NAME = os.getenv('EVENTHUB_NAME')
+FILEPATH = os.getenv("TRANSPORT_CSV")
 
-class Transport:   
+class Transport:
     def __init__(self, reportyear, race_eth_code, race_eth_name, geoname, mode, mode_name, pop_total, pop_mode):
         self.reportyear = reportyear
         self.race_eth_code = race_eth_code
@@ -16,21 +18,36 @@ class Transport:
         self.mode_name = mode_name
         self.pop_total = pop_total
         self.pop_mode = pop_mode
+
     def __str__(self):
         return f"{self.reportyear}, {self.race_eth_code}, {self.race_eth_name}, {self.geoname}, {self.mode}, {self.mode_name}, {self.pop_total}, {self.pop_mode}"
 
+
 def send_to_eventhub(client, data):
+    """
+    This function sends the provided data to the Azure Event Hub using the specified client.
+
+
+    :param client: The Event Hub producer client.
+    :param data: The data to be sent to the Event Hub in JSON format.
+       """
     event_data_batch = client.create_batch()
     event_data_batch.add(EventData(data))
     client.send_batch(event_data_batch)
 
+
 def main():
-    with open(r'C:\Users\ayomi\OneDrive\Desktop\Data pipeline using Azure stream Analytics\Data-pipeline-using-Azure-stream-Analytics\Data\transportation.csv', 'r') as transport_desc:
+    """
+       This is the main function reads transportation data from a CSV file, converts it to JSON, and sends it to an Azure Event Hub using the send_to_eventhub method.
+    """
+    with open(
+            FILEPATH,
+            'r') as transport_desc:
         csv_reader = reader(transport_desc)
         header = next(transport_desc)
 
         client = EventHubProducerClient.from_connection_string\
-                 (connection_str, eventhub_name=eventhub_name)
+            (CON_STR, eventhub_name=EVENTHUB_NAME)
         for row in csv_reader:
             reportyear1 = row[0]
             race_eth_code1 = row[1]
@@ -41,21 +58,12 @@ def main():
             pop_total1 = row[6]
             pop_mode1 = row[7]
 
-            weather = Transport(reportyear1, race_eth_code1, race_eth_name1, geoname1, mode1, mode_name1, pop_total1, pop_mode1)
+            weather = Transport(reportyear1, race_eth_code1, race_eth_name1, geoname1, mode1, mode_name1, pop_total1,
+                                pop_mode1)
             send_to_eventhub(client, json.dumps(weather.__dict__))
             print(json.dumps(weather.__dict__))
 
-main()
 
+if __name__ == '__main__':
+    main()
 
-
-
-
-
-
-
-
-
-
-# countries = header[:-1].split(',')[1:]
-# connection_str = 'Endpoint=sb://weather-data-eventhub.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=AXgSPNVwK+ZGB8wdK5tdF1bNsduLFgSsGRd4bsJiT2I='
